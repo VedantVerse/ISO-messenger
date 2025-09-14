@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ISO — Login</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body, html {
+    margin:0;
+    padding:0;
+    height:100%;
+    overflow:hidden;
+    font-family: Inter, system-ui, sans-serif;
+    background:#000;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+  }
+
+  canvas#bgCanvas {
+    position: fixed;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    z-index:-1;
+  }
+
+  /* Animated ISO title */
+  .animated-title {
+    font-size:48px;
+    font-weight:900;
+    background: linear-gradient(270deg, #ff0000, #ff6ec7, #7c4dff, #7fff4d);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 6s ease infinite;
+    text-align:center;
+    margin-bottom:30px;
+    text-shadow:0 0 15px rgba(166,77,255,0.6);
+  }
+
+  @keyframes gradientShift{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  input{
+    width:250px;
+    padding:12px;
+    margin:10px 0;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.5);
+    outline:none;
+    font-size:16px;
+    background: rgba(0,0,0,0.3);
+    color:#fff;
+  }
+
+  button{
+    background: linear-gradient(90deg,#a64dff,#7c4dff);
+    border:none;
+    padding:12px 20px;
+    border-radius:12px;
+    color:white;
+    cursor:pointer;
+    font-weight:700;
+    transition: transform 0.2s;
+    margin-top:10px;
+  }
+  button:hover{ transform:translateY(-3px); }
+
+  button.alt{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.5);
+  }
+
+  .row{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-top:15px;
+  }
+
+  h2{
+    color:#fff;
+    text-shadow:0 0 8px #a64dff;
+    text-align:center;
+    margin-bottom:20px;
+  }
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<div class="animated-title">ISO</div>
+<h2>Login</h2>
+<input id="username" placeholder="Enter your name" autocomplete="off" />
+<div class="row">
+  <button id="loginBtn">Enter ISO</button>
+  <button id="guestBtn" class="alt">Try as Guest</button>
+</div>
+
+<script src="app.js"></script>
+<script>
+// Login buttons
+document.getElementById('loginBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('username').value.trim();
+  if(!name){ alert('Type your name first 😊'); return; }
+  isoRegisterOrLogin(name);
+});
+document.getElementById('guestBtn').addEventListener('click', ()=>{ isoRegisterOrLogin('Guest_'+Math.floor(Math.random()*900+100)); });
+
+// STARFIELD with twinkling stars
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+
+window.addEventListener('resize', ()=>{
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+});
+
+// stars array
+let stars = [];
+for(let i=0;i<150;i++){
+  stars.push({
+    x: Math.random()*w,
+    y: Math.random()*h,
+    r: Math.random()*1.5+0.5,
+    alpha: Math.random(),
+    delta: Math.random()*0.02+0.01
+  });
+}
+
+function animate(){
+  ctx.fillStyle='black';
+  ctx.fillRect(0,0,w,h);
+
+  for(let s of stars){
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+    ctx.fill();
+
+    // twinkle effect
+    s.alpha += s.delta;
+    if(s.alpha <= 0){ s.alpha = 0; s.delta *= -1; }
+    if(s.alpha >= 1){ s.alpha = 1; s.delta *= -1; }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html>
