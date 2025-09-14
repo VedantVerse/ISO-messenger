@@ -275,6 +275,29 @@ messageInput.addEventListener('keypress',(e)=>{
 document.getElementById('backBtn').addEventListener('click',()=>{
   window.location='chats.html';
 });
+let shootingStars = [];
+function addShootingStar() {
+  shootingStars.push({
+    x: Math.random()*w, y: 0,
+    vx: Math.random()*2-1, vy: Math.random()*4+2,
+    length: Math.random()*80+30
+  });
+}
+setInterval(addShootingStar, 3000);
+
+function drawShootingStars() {
+  for(let i=shootingStars.length-1;i>=0;i--){
+    let s=shootingStars[i];
+    ctx.beginPath();
+    ctx.moveTo(s.x,s.y);
+    ctx.lineTo(s.x-s.vx*s.length,s.y-s.vy*s.length);
+    ctx.strokeStyle='rgba(255,255,255,0.8)';
+    ctx.stroke();
+    s.x+=s.vx; s.y+=s.vy;
+    if(s.y>h) shootingStars.splice(i,1);
+  }
+}
+
 </script>
 </body>
 </html>
