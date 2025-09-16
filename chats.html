@@ -11,7 +11,7 @@
     padding:0;
     height:100%;
     font-family: Inter, system-ui, sans-serif;
-    background:#000;
+    background:none;
     color:white;
     overflow:hidden;
   }
@@ -30,7 +30,7 @@
     justify-content:space-between;
     align-items:center;
     padding:10px 20px;
-    background: rgba(15,15,23,0.85);
+    background: none;
     backdrop-filter: blur(10px);
     position: relative;
     z-index:2;
@@ -82,7 +82,7 @@
 
   aside.sidebar{
     width:280px;
-    background: rgba(15,15,23,0.85);
+    background: none;
     backdrop-filter: blur(10px);
     display:flex;
     flex-direction:column;
@@ -113,7 +113,7 @@
     transition: background 0.2s;
   }
   .contact-item:hover{
-    background: rgba(166,77,255,0.2);
+    background: rgba(103, 61, 255, 0.384);
   }
 
   .contact-name{
@@ -173,7 +173,7 @@
 
 <script src="app.js"></script>
 <script>
-// STARFIELD background
+// Galaxy background with shooting stars
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 let w = canvas.width = window.innerWidth;
@@ -184,8 +184,9 @@ window.addEventListener('resize', ()=>{
   h = canvas.height = window.innerHeight;
 });
 
+// Stars
 let stars = [];
-for(let i=0;i<150;i++){
+for(let i=0;i<200;i++){
   stars.push({
     x: Math.random()*w,
     y: Math.random()*h,
@@ -195,10 +196,29 @@ for(let i=0;i<150;i++){
   });
 }
 
+// Shooting stars
+let shooting = [];
+function newShootingStar(){
+  shooting.push({
+    x: Math.random()*w,
+    y: Math.random()*h/2,
+    len: Math.random()*80+50,
+    speed: Math.random()*4+3,
+    alpha: 1
+  });
+}
+setInterval(newShootingStar, 2500);
+
 function animate(){
-  ctx.fillStyle='black';
+  // Gradient background
+  const gradient = ctx.createLinearGradient(0,0,w,h);
+  gradient.addColorStop(0,'#0f2027');
+  gradient.addColorStop(0.5,'#203a43');
+  gradient.addColorStop(1,'#2c5364');
+  ctx.fillStyle=gradient;
   ctx.fillRect(0,0,w,h);
 
+  // Stars twinkle
   for(let s of stars){
     ctx.beginPath();
     ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
@@ -210,9 +230,24 @@ function animate(){
     if(s.alpha >= 1){ s.alpha = 1; s.delta *= -1; }
   }
 
+  // Shooting stars
+  for(let i=shooting.length-1;i>=0;i--){
+    const sh = shooting[i];
+    ctx.strokeStyle=`rgba(255,255,255,${sh.alpha})`;
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(sh.x,sh.y);
+    ctx.lineTo(sh.x-sh.len,sh.y+sh.len/3);
+    ctx.stroke();
+
+    sh.x+=-sh.speed;
+    sh.y+=sh.speed/3;
+    sh.alpha-=0.01;
+    if(sh.alpha<=0) shooting.splice(i,1);
+  }
+
   requestAnimationFrame(animate);
 }
-
 animate();
 
 // Demo contacts
